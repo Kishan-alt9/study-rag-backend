@@ -1,0 +1,111 @@
+# Decision Log
+
+This log records project decisions in chronological order. Confirmed decisions and
+proposals are labeled separately. A proposal is not an approval or an implementation.
+Existing entries must not be silently rewritten; record a reversal as a new entry and
+retain the earlier history.
+
+## 1. Project objective
+
+Build a new study-focused RAG backend incrementally, with each major architectural
+change explained, understood, and verified before implementation. This repository
+starts as documentation and project scaffolding only; it does not contain a RAG
+pipeline.
+
+## 2. Development principles
+
+- Develop in small, testable phases.
+- Before a major architectural change, the tutor explains the concepts and
+  alternatives, quizzes the student, and requires a passing result before
+  implementation.
+- Document every meaningful decision, implementation change, mistake, fix, and
+  verification result.
+- Keep confirmed decisions distinct from proposals awaiting approval.
+- Preserve decision history. Record reversals and their lessons rather than silently
+  rewriting prior decisions.
+- `decisions.md` records the history of decisions; `flow.md` records the actual
+  system flow and clearly separates it from proposals.
+- Do not claim that a component exists until code and tests verify it.
+
+## 3. Confirmed decisions
+
+The following decisions were supplied and confirmed by the project owner:
+
+| ID | Date | Decision |
+| --- | --- | --- |
+| D-001 | 2026-10-10 | This is a new RAG project, separate from the previous implementation. |
+| D-002 | 2026-10-10 | The backend and frontend will live in separate GitHub repositories. |
+| D-003 | 2026-10-10 | The backend repository is named `study-rag-backend`. |
+| D-004 | 2026-10-10 | The frontend repository is named `study-rag-frontend`. |
+| D-005 | 2026-10-10 | GitHub is the remote repository; development happens locally. |
+| D-006 | 2026-10-10 | The project will be developed in small, testable phases. |
+| D-007 | 2026-10-10 | Before every major architectural change, the tutor will explain the concepts and alternatives, quiz the student, and require a passing result before implementation. |
+| D-008 | 2026-10-10 | Every meaningful decision, implementation change, mistake, fix, and verification result must be documented. |
+| D-009 | 2026-10-10 | `decisions.md` records decision history; `flow.md` records the actual system flow. |
+| D-010 | 2026-10-10 | Existing decisions must not be silently rewritten. Reversed decisions must retain their history. |
+
+## 4. Proposed decisions awaiting approval
+
+None of the following proposals is approved, finally selected, or implemented:
+
+| ID | Date | Status | Proposal |
+| --- | --- | --- | --- |
+| P-001 | 2026-10-10 | Proposed — awaiting approval | Use a Python backend with a `src` layout. |
+| P-002 | 2026-10-10 | Proposed — awaiting approval | Use PostgreSQL for document metadata and persistence. |
+| P-003 | 2026-10-10 | Proposed — awaiting approval | Use a vector index for semantic retrieval. |
+| P-004 | 2026-10-10 | Proposed — awaiting approval | Use lexical search for keyword retrieval. |
+| P-005 | 2026-10-10 | Proposed — awaiting approval | Use hybrid retrieval with Reciprocal Rank Fusion (RRF). |
+| P-006 | 2026-10-10 | Proposed — awaiting approval | Use a reranker to order retrieved passages. |
+| P-007 | 2026-10-10 | Proposed — awaiting approval | Use an LLM for grounded answer generation. |
+| P-008 | 2026-10-10 | Proposed — awaiting approval | Use OCR for scanned documents. |
+| P-009 | 2026-10-10 | Proposed — awaiting approval | Use FastAPI to serve the backend. |
+
+## 5. Mistakes, root causes and fixes
+
+No project-specific mistakes, root causes, or fixes have been verified for this new
+repository. Do not infer or invent incidents from the existence of a previous
+implementation. Use the incident template below when a future mistake and its fix
+are established.
+
+## 6. Reversed decisions and lessons learned
+
+No decisions have been reversed in this repository. When a decision is reversed,
+retain its original entry and add a new dated entry describing the replacement and
+the lesson learned.
+
+## 7. Decision-log entry template
+
+Copy this template for each future decision, implementation change, incident, or
+verification record. Mark the status clearly as confirmed, proposed, rejected,
+implemented, or reversed as appropriate.
+
+### [Decision ID] — [Short title]
+
+- **Date:**
+- **Status:**
+- **Context/problem:**
+- **Decision:**
+- **Reasoning:**
+- **Alternatives considered:**
+- **Trade-offs:**
+- **Quiz outcome, if applicable:**
+- **Implementation changes:**
+- **Tests and verification:**
+- **Follow-up actions:**
+
+
+
+## Environment Setup
+
+- **Date:** 2026-10-10
+- **Status:** Implemented and verified
+- **Decision:** Create the project's virtual environment in the repository root using Python's built-in `venv` module.
+- **Location:** `.venv/`
+- **Python version:** 3.13.7
+- **Reasoning:** Isolate project dependencies from other Python projects and make the development environment reproducible.
+- **Git:** `.venv` is ignored by `.gitignore`.
+
+| D-007 | 2026-10-10 | Before every major architectural change, the tutor will explain the concepts and alternatives, quiz the student, and require a passing result before implementation. |
+
+- **Verification:** Confirmed the environment's Python executable, version, and Git ignore rule.
+- **Follow-up:** Check compatibility before choosing RAG libraries and dependencies.

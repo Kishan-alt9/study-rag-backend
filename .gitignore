@@ -1,0 +1,39 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and editor-local configuration
+.idea/
+.vscode/
+*.suo
+*.user
+
+# Generated model, index, and local document artifacts
+*.model
+*.weights
+*.safetensors
+*.index
+vector-index/
+vector_indexes/
+indexes/
+data/local/
+uploads/
