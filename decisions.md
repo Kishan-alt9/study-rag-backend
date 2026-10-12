@@ -144,3 +144,15 @@ implemented, or reversed as appropriate.
 - **Implementation changes:** Added `src/study_rag/pdf_reader.py` and `tests/test_pdf_reader.py`. Declared `PyMuPDF>=1.28.2` in `pyproject.toml` and installed PyMuPDF 1.28.2 into `.venv`. Compatibility was checked before installation: PyMuPDF 1.28.2 declares Python `>=3.10` and publishes a Windows x64 `cp310-abi3` wheel, compatible with the project's CPython 3.13.7 environment.
 - **Tests and verification:** Ran `$env:PYTHONPATH = 'src'; .\.venv\Scripts\python.exe -m unittest discover -s tests -v` — 7 tests passed, 0 failed. Tests cover multiple pages and their order, source name and one-based numbering, an empty page, missing path, directory input, corrupt PDF, and an encrypted PDF requiring a password.
 - **Follow-up actions:** Verify compatibility before adding dependencies for any later pipeline component.
+
+### D-013 — Milestone 2 standalone text chunker
+
+- **Date:** 2026-10-12
+- **Status:** Implemented and verified.
+- **Context/problem:** Convert the PDF reader's page records into bounded text units while retaining source and page provenance.
+- **Decision:** Add a standard-library chunker with defaults of 1,000 characters and 150 characters of overlap. It joins consecutive records from a single source using `\n\n` between non-empty page text fields, prefers paragraph, sentence, and whitespace boundaries, then uses a hard split to guarantee progress.
+- **Metadata decision:** Each chunk records its source, zero-based chunk index within its contiguous source run, and unique page numbers in input order whose non-whitespace page text contributes to the chunk. Inserted separators and whitespace-only page text do not count as page contributions. An empty page contributes no chunk text. A repeated source filename separated by another source is processed as a new run in input order; it is not merged with its earlier appearance, and the index resets for that run.
+- **Trade-offs:** Overlap is character-based, and chunk text may include whitespace from page records and the `\n\n` page separator. Empty and whitespace-only chunks are omitted. Chunking does not imply embeddings, indexing, retrieval, or generation.
+- **Implementation changes:** Added `src/study_rag/chunker.py` and `tests/test_chunker.py`; updated README and flow documentation. No dependencies or project configuration changes.
+- **Tests and verification:** Ran `$env:PYTHONPATH = 'src'; .\.venv\Scripts\python.exe -m unittest discover -s tests -v` — 23 tests passed, 0 failed (15 chunker tests and all 8 existing PDF reader tests). `git diff --check` completed with no whitespace errors. Confirmed `src/study_rag/pdf_reader.py` and `tests/test_pdf_reader.py` have no diff.
+- **Follow-up actions:** None for this milestone.

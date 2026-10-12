@@ -9,19 +9,30 @@ pipeline component does not mean it has been implemented.
 The caller provides a filesystem path to a PDF. The reader checks that the path
 exists and is a regular file, opens it with PyMuPDF, and returns one record per page
 in the original order. Each record contains the PDF filename, its one-based page
-number, and extracted text. Blank pages remain as records with empty text.
+number, and extracted text. Blank pages remain as records with empty text. The
+caller may pass the records to the standalone chunker. It combines consecutive
+same-source page records with `\n\n` between non-empty page text fields and emits
+chunks up to 1,000 characters with 150 characters of overlap by default. Paragraph,
+sentence, and whitespace boundaries are preferred in that order, with hard
+character splits as fallback. Chunk records retain source, zero-based index within
+the contiguous source run, and the ordered unique page numbers whose non-whitespace
+text occurs in that chunk.
 
 Missing paths raise `FileNotFoundError`, directories raise `IsADirectoryError`,
 invalid PDFs raise `ValueError`, and password-protected or OS-inaccessible PDFs
-raise `PermissionError`. The source PDF is not modified. This reader does not
-perform OCR. Upload handling, chunking, indexing, retrieval, answer generation,
-and API routes have not been implemented.
+raise `PermissionError`. The source PDF is not modified. The reader does not
+perform OCR. The chunker omits empty and whitespace-only chunks; empty page text
+adds no separator, while whitespace-only page text is retained but is not listed
+as a contributing page. A source change ends the current run; later appearances
+of the same filename are handled separately and in input order. Upload handling,
+embeddings, indexing, retrieval, answer generation, and API routes have not been
+implemented.
 
 ## B. Approved Basic RAG v1 pipeline (conceptual)
 
 The owner approved these seven pipeline components after passing the architecture
-quiz with 4/4 answers. Only per-page PDF text extraction is implemented so far;
-the remaining steps are planned:
+quiz with 4/4 answers. Per-page PDF text extraction and standalone text chunking
+are implemented; the remaining pipeline steps are planned:
 
 1. Select or receive study documents.
 2. Extract text from PDF pages.
@@ -71,8 +82,9 @@ flowchart TD
     M --> N[Citation validation and response]
 ```
 
-The upload and later pipeline behavior shown here is proposed. Only local PDF text
-extraction and its per-page output are currently implemented.
+The upload and later pipeline behavior shown here is proposed. Local PDF text
+extraction and standalone text chunking are implemented; embedding generation,
+indexing, retrieval, and answer generation are not.
 
 ## D. Proposed storage responsibilities
 

@@ -8,8 +8,9 @@ from the previous implementation; the frontend is planned for the separate
 
 ## Current status
 
-**Milestone 1 complete:** the backend can extract text page by page from a local
-PDF. Upload handling, chunking, search, database integration, and answer generation
+**Milestones 1 and 2 complete:** the backend can extract text page by page from a
+local PDF and split page records into overlapping, source-aware text chunks.
+Upload handling, embeddings, search, database integration, and answer generation
 are not implemented.
 
 ## Planned high-level capabilities
@@ -29,8 +30,10 @@ study-rag-backend/
 ├── src/
 │   └── study_rag/
 │       ├── __init__.py
+│       ├── chunker.py
 │       └── pdf_reader.py
 └── tests/
+    ├── test_chunker.py
     └── test_pdf_reader.py
 ```
 
@@ -122,3 +125,23 @@ for page in pages:
 
 This reader does not perform OCR or modify the PDF. Missing files, directories,
 corrupt or unreadable PDFs, and PDFs requiring a password raise documented errors.
+
+### Text chunker
+
+`chunk_pages` accepts the reader's ordered page records and returns records with
+`source`, `pages`, `chunk_index`, and `text`. Its defaults are 1,000 characters
+per chunk and 150 characters of overlap. Chunk-size and overlap arguments are
+validated; chunks are capped by character count and prefer paragraph, sentence,
+then whitespace boundaries, falling back to a hard split when necessary.
+
+Consecutive pages from one source are combined with two newline characters
+(`\n\n`) between non-empty page text. Empty page text adds no separator;
+whitespace-only page text remains in the combined text but is not listed as a
+contributing page. Page metadata lists, in input order and without duplicates,
+only pages whose non-whitespace text occurs in that chunk. A source change ends
+the current run; if the same filename occurs again later, that appearance is
+chunked separately in input order and its chunk index starts at zero. Empty and
+whitespace-only chunks are omitted.
+
+The chunker is a standalone preprocessing step. It does not create embeddings,
+indexes, perform retrieval, or generate answers.
