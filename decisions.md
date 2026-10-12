@@ -109,3 +109,38 @@ implemented, or reversed as appropriate.
 
 - **Verification:** Confirmed the environment's Python executable, version, and Git ignore rule.
 - **Follow-up:** Check compatibility before choosing RAG libraries and dependencies.
+
+### D-011 — Basic RAG v1 conceptual architecture
+
+- **Date:** 2026-10-10
+- **Status:** Approved — conceptual pipeline
+- **Context/problem:** Establish the basic pipeline scope before implementing it in small, verified milestones.
+- **Decision:** Basic RAG v1 consists of seven pipeline components:
+  1. Select or receive study documents.
+  2. Extract text from PDF pages.
+  3. Split extracted text into chunks.
+  4. Generate embeddings for chunks.
+  5. Store and index the embedded chunks.
+  6. Retrieve relevant chunks for a question.
+  7. Generate a grounded answer with source references.
+- **Reasoning:** Agree on the responsibilities in the pipeline while leaving implementation details open for compatibility checks.
+- **Alternatives considered:** Not recorded.
+- **Trade-offs:** Conceptual approval does not select libraries or mean that future pipeline stages have been implemented.
+- **Quiz outcome:** The owner passed the architecture quiz with 4/4 answers.
+- **Implementation changes:** None under this architecture approval alone.
+- **Tests and verification:** Not applicable to the conceptual approval.
+- **Technology status:** Proposed technology choices remain pending compatibility verification against the project's Python 3.13.7 environment. Existing P-001–P-009 entries remain proposals; they have not been silently changed or promoted to technology decisions.
+- **Follow-up actions:** Verify each technology candidate before adding it as a dependency or implementing a later stage.
+
+### D-012 — Milestone 1 PDF text reader
+
+- **Date:** 2026-10-10
+- **Status:** Implemented and verified
+- **Context/problem:** Add the first testable pipeline component without implementing later RAG stages.
+- **Decision:** Add a small `extract_pdf_pages(pdf_path)` reader that returns one `{source, page, text}` record per PDF page, keeps blank pages, and reports invalid inputs and unreadable/password-protected PDFs with clear exceptions.
+- **Reasoning:** Per-page records retain source and page information needed by later steps while keeping this milestone independent of chunking, search, and generation.
+- **Alternatives considered:** OCR and broader document-processing frameworks were excluded from this milestone.
+- **Trade-offs:** Image-only PDF pages do not produce OCR text; encrypted PDFs requiring a password are rejected because this reader accepts no password.
+- **Implementation changes:** Added `src/study_rag/pdf_reader.py` and `tests/test_pdf_reader.py`. Declared `PyMuPDF>=1.28.2` in `pyproject.toml` and installed PyMuPDF 1.28.2 into `.venv`. Compatibility was checked before installation: PyMuPDF 1.28.2 declares Python `>=3.10` and publishes a Windows x64 `cp310-abi3` wheel, compatible with the project's CPython 3.13.7 environment.
+- **Tests and verification:** Ran `$env:PYTHONPATH = 'src'; .\.venv\Scripts\python.exe -m unittest discover -s tests -v` — 7 tests passed, 0 failed. Tests cover multiple pages and their order, source name and one-based numbering, an empty page, missing path, directory input, corrupt PDF, and an encrypted PDF requiring a password.
+- **Follow-up actions:** Verify compatibility before adding dependencies for any later pipeline component.

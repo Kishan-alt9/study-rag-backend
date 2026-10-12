@@ -8,14 +8,14 @@ from the previous implementation; the frontend is planned for the separate
 
 ## Current status
 
-**Initial scaffold only.** No application logic, PDF upload, RAG pipeline, search,
-database integration, reranking, or LLM generation has been implemented.
+**Milestone 1 complete:** the backend can extract text page by page from a local
+PDF. Upload handling, chunking, search, database integration, and answer generation
+are not implemented.
 
 ## Planned high-level capabilities
 
-The project may eventually support document ingestion and question answering over
-study materials. The architecture and technologies for those capabilities are
-proposals awaiting owner approval, not selected or implemented features. See
+The Basic RAG v1 pipeline has conceptual approval, but its later stages and their
+technology choices remain pending compatibility checks and implementation. See
 [`decisions.md`](./decisions.md) and [`flow.md`](./flow.md).
 
 ## Repository structure
@@ -28,9 +28,10 @@ study-rag-backend/
 ├── pyproject.toml
 ├── src/
 │   └── study_rag/
-│       └── __init__.py
+│       ├── __init__.py
+│       └── pdf_reader.py
 └── tests/
-    └── .gitkeep
+    └── test_pdf_reader.py
 ```
 
 The root `.gitignore` contains local-file exclusions and is not shown above.
@@ -57,7 +58,9 @@ system flow and separately labeled future proposals are maintained in
 - Git.
 - Visual Studio Code (recommended).
 
-Python 3.13.7 has been verified for creating this project's virtual environment. Compatibility with future RAG dependencies has not yet been evaluated.
+Python 3.13.7 has been verified for this project's virtual environment. PyMuPDF's
+compatibility has been checked for the PDF reader; other future dependencies have
+not yet been evaluated.
 
 ### Create the Virtual Environment
 
@@ -90,9 +93,32 @@ If PowerShell activation is blocked, use the environment's interpreter directly:
 
 ### Dependencies
 
-
-No runtime dependencies have been selected or installed yet. Dependency installation instructions will be added after the required libraries are chosen and their compatibility is checked.
+PyMuPDF is used for page-level PDF text extraction. It is declared in
+`pyproject.toml` and has been installed into `.venv` after checking compatibility
+with Python 3.13.7.
 
 ### Tests
 
-Automated tests have not been implemented yet. Testing instructions will be added as testable components are introduced.
+Run the unit tests from the repository root in PowerShell:
+
+```powershell
+$env:PYTHONPATH = "src"
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+### PDF text reader
+
+`extract_pdf_pages` returns one record for every PDF page, including blank pages.
+Each record contains the PDF filename, a one-based page number, and extracted
+text. For example:
+
+```python
+from study_rag.pdf_reader import extract_pdf_pages
+
+pages = extract_pdf_pages("course-notes.pdf")
+for page in pages:
+    print(page["source"], page["page"], page["text"])
+```
+
+This reader does not perform OCR or modify the PDF. Missing files, directories,
+corrupt or unreadable PDFs, and PDFs requiring a password raise documented errors.
